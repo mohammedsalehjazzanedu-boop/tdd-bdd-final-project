@@ -29,6 +29,7 @@ import unittest
 from decimal import Decimal
 from service.models import Product, Category, db
 from service import app
+from service.models import DataValidationError
 from tests.factories import ProductFactory
 
 DATABASE_URI = os.getenv(
@@ -206,20 +207,17 @@ class TestProductModel(unittest.TestCase):
 
     def test_update_without_id(self):
         """It should not Update a Product with no id"""
-        from service.models import DataValidationError
         product = ProductFactory()
         product.id = None
         self.assertRaises(DataValidationError, product.update)
 
     def test_deserialize_bad_available(self):
         """It should not Deserialize a bad available value"""
-        from service.models import DataValidationError
         data = ProductFactory().serialize()
         data["available"] = "yes"
         self.assertRaises(DataValidationError, Product().deserialize, data)
 
     def test_deserialize_missing_data(self):
         """It should not Deserialize missing or bad data"""
-        from service.models import DataValidationError
         self.assertRaises(DataValidationError, Product().deserialize, {})
         self.assertRaises(DataValidationError, Product().deserialize, None)
